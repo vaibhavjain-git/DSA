@@ -25,6 +25,9 @@ void enqueue(struct queue*, struct BSTnode*);
 void levelOrder(struct BSTnode*,struct queue*);
 struct BSTnode* dequeue(struct queue*);
 bool isQueueEmpty(struct queue*);
+void preOrder(struct BSTnode*);
+void postOrder(struct BSTnode*);
+void inOrder(struct BSTnode*);
 
 int main(){
     struct queue theQueue;
@@ -37,6 +40,12 @@ int main(){
     printf("Maxrec - %d \n ", findMaxRec(rootPtr));
     printf("Height - %d \n", findHeight(rootPtr));
     levelOrder(rootPtr,&theQueue);
+    printf("The post order traversel is : \n");
+    postOrder(rootPtr);
+    printf("The in order traversel is : \n");
+    inOrder(rootPtr);
+    printf("The pre order traversel is : \n");
+    preOrder(rootPtr);
     return 0;
 }
 
@@ -70,6 +79,24 @@ void levelOrder(struct BSTnode* rootPtr,struct queue* theQueue){
             enqueue(theQueue,theNode->right);
         }
     }
+}
+
+void preOrder(struct BSTnode* rootPtr){
+    printf("The Data is %d\n",rootPtr->data);
+    if(rootPtr->left!=NULL)preOrder(rootPtr->left);
+    if(rootPtr->right!=NULL)preOrder(rootPtr->right);
+}
+
+void postOrder(struct BSTnode* rootPtr){
+    if(rootPtr->left!=NULL)postOrder(rootPtr->left);
+    if(rootPtr->right!=NULL)postOrder(rootPtr->right);
+    printf("The Data is %d\n",rootPtr->data);
+}
+
+void inOrder(struct BSTnode* rootPtr){
+    if(rootPtr->left!=NULL)inOrder(rootPtr->left);
+    printf("The Data is %d\n",rootPtr->data);
+    if(rootPtr->right!=NULL)inOrder(rootPtr->right);
 }
 
 bool isQueueEmpty(struct queue* theQueue){
