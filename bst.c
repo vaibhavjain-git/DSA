@@ -1,47 +1,107 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<stdbool.h>
 
 struct BSTnode {
  int data;
  struct BSTnode* left;
  struct BSTnode* right;
 };
+
+struct queue{
+    struct BSTnode* arr[50];
+    int front;
+    int rear;
+};
 struct BSTnode* createBST(struct BSTnode*);
-struct BSTnode* insert(struct BSTnode*,int);
+void insert(struct BSTnode**,int);
 struct BSTnode* getNewNode(int);
+int findMin(struct BSTnode*);
+int findMax(struct BSTnode*);
+int findMaxRec(struct BSTnode*);
+int max(int,int);
+int findHeight(struct BSTnode*);
+void enqueue(struct queue*, struct BSTnode*);
+void levelOrder(struct BSTnode*,struct queue*);
+struct BSTnode* dequeue(struct queue*);
+bool isQueueEmpty(struct queue*);
 
 int main(){
+    struct queue theQueue;
+    theQueue.rear = -1;
+    theQueue.front = -1;
     struct BSTnode* rootPtr = NULL;
     rootPtr = createBST(rootPtr);
-    printf("%d\n",rootPtr->data);
-    printf("%d\n",rootPtr->left->data);
-    printf("%d\n",rootPtr->right->data);
-    printf("%d\n",rootPtr->left->left->data);
+    printf("Min - %d \n", findMin(rootPtr));
+    printf("Max - %d \n", findMax(rootPtr));
+    printf("Maxrec - %d \n ", findMaxRec(rootPtr));
+    printf("Height - %d \n", findHeight(rootPtr));
+    levelOrder(rootPtr,&theQueue);
     return 0;
 }
 
+void enqueue(struct queue* theQueue, struct BSTnode* node){
+    if(theQueue->front == -1){
+        theQueue->front++;
+        theQueue->rear++;
+        theQueue->arr[theQueue->rear] = node;
+    }
+    else{
+        theQueue->rear++;
+        theQueue->arr[theQueue->rear] = node;
+    }
+}
+
+struct BSTnode* dequeue(struct queue* theQueue ){
+    struct BSTnode* node = theQueue->arr[theQueue->front];
+    theQueue->front++;
+    return node;
+}
+
+void levelOrder(struct BSTnode* rootPtr,struct queue* theQueue){
+    enqueue(theQueue,rootPtr);
+    while(!isQueueEmpty(theQueue)){
+        struct BSTnode* theNode = dequeue(theQueue);
+        printf("The element is %d\n", theNode->data);
+        if(theNode->left!=NULL){
+            enqueue(theQueue,theNode->left);
+        }
+        if(theNode->right!=NULL){
+            enqueue(theQueue,theNode->right);
+        }
+    }
+}
+
+bool isQueueEmpty(struct queue* theQueue){
+    if((theQueue->front == -1) || (theQueue->front == theQueue->rear+1)){
+        return true;
+    }
+    return false;
+}
+
 struct BSTnode* createBST(struct BSTnode* rootPtr){
-rootPtr = insert(rootPtr,15);
-rootPtr = insert(rootPtr,10);
-rootPtr = insert(rootPtr,20);
-rootPtr = insert(rootPtr,5);
+insert(&rootPtr,33);
+insert(&rootPtr,16);
+insert(&rootPtr,36);
+insert(&rootPtr,15);
+insert(&rootPtr,20);
+insert(&rootPtr,34);
+insert(&rootPtr,39);
+insert(&rootPtr,12);
 return rootPtr;
 
 }
 
-struct BSTnode* insert(struct BSTnode* root,int item){
-    struct BSTnode* p = root;
-    if(root==NULL){
-        root = getNewNode(item);
+void insert(struct BSTnode** root,int item){
+    if(*root==NULL){
+        *root = getNewNode(item);
     }
-    else if(item <= root->data){
-        root->left = insert(root->left,item);
+    else if(item <= (*root)->data){
+        insert(&((*root)->left),item);
     }
     else{
-        root->right = insert(root->right,item);
+        insert(&((*root)->right),item);
     }
-    return root;
-
 }
 
 struct BSTnode* getNewNode(int data){
@@ -50,4 +110,40 @@ struct BSTnode* getNewNode(int data){
     p->right = NULL;
     p->data = data;
     return p;
+}
+
+int findMin(struct BSTnode* root){
+    struct BSTnode* p = root;
+    while(p->left !=NULL){
+        p = p->left;
+    }
+    return p->data;
+}
+
+int findMax(struct BSTnode* root){
+    struct BSTnode* p = root;
+    while(p->right !=NULL){
+        p = p->right;
+    }
+    return p->data;
+}
+
+int findMaxRec(struct BSTnode* root){
+    struct BSTnode* p = root;
+    if(p->right !=NULL){
+        return findMaxRec(p->right);
+    }
+    return p->data;
+}
+
+int findHeight(struct BSTnode* root){
+    if(root!=NULL){
+        return 1 + max(findHeight(root->left),findHeight(root->right));
+    }
+    return -1;
+}
+
+int max(int n1,int n2){
+    if(n1>n2) return n1;
+    return n2;
 }
